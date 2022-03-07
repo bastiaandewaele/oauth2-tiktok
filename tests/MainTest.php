@@ -7,7 +7,7 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 use TikTok\OAuth2\Client\Providers\TikTokAuthProvider;
 use Mockery as M;
-use \League\OAuth2\Client\Token\AccessToken;
+use League\OAuth2\Client\Token\AccessToken;
 
 class MainTest extends TestCase
 {
@@ -58,13 +58,15 @@ class MainTest extends TestCase
             ->once()
             ->andReturn([
                 'data' => [
-                    'open_id' => 'xyz_open_id',
-                    'union_id' => 'xyz',
-                    'avatar_url' => 'xyz',
-                    'avatar_url_100' => 'xyz',
-                    'avatar_url_200' => 'xyz',
-                    'avatar_large_url' => 'xyz',
-                    'display_name' => 'xyz',
+                    'user' => [
+                        'open_id' => 'xyz_open_id',
+                        'union_id' => 'xyz',
+                        'avatar_url' => 'xyz',
+                        'avatar_url_100' => 'xyz',
+                        'avatar_url_200' => 'xyz',
+                        'avatar_large_url' => 'xyz',
+                        'display_name' => 'xyz',
+                    ],
                 ],
                 'error' => [
                     'code' => 0,
@@ -78,8 +80,8 @@ class MainTest extends TestCase
 
         $data = $resourceOwner->toArray();
 
-        $this->assertArrayHasKey('open_id', $data['data']);
-        $this->assertArrayHasKey('union_id', $data['data']);
+        $this->assertArrayHasKey('open_id', $data['user']);
+        $this->assertArrayHasKey('union_id', $data['user']);
         $this->assertEquals($resourceOwner->getId(), 'xyz_open_id');
     }
 }
