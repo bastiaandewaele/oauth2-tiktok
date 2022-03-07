@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace TikTok\OAuth2\Client\Providers;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\GuzzleException;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
@@ -75,7 +72,11 @@ class TikTokAuthProvider extends AbstractProvider
         return $result['data'];
     }
 
-    protected function getAuthorizationHeaders(AccessToken $token = null): array
+    /**
+     * @param null|AccessToken $token
+     * @return string[]
+     */
+    protected function getAuthorizationHeaders($token = null): array
     {
         return ['Authorization' => 'Bearer ' . $token->getToken()];
     }
@@ -99,23 +100,26 @@ class TikTokAuthProvider extends AbstractProvider
     {
         $url = $this->getResourceOwnerDetailsUrl($token);
 
-        $body = [
-            'body' => [
-                'open_id' => $token->getResourceOwnerId(),
-                'access_token' => $token->getToken(),
-                'fields' => [
-                    "open_id",
-                    "union_id",
-                    "avatar_url",
-                    "avatar_url_100",
-                    "avatar_url_200",
-                    "avatar_large_url",
-                    "display_name"
-                ],
-            ],
+        $options = [
+            'headers' => $this->getDefaultHeaders(),
+            'body' => json_encode(
+                [
+                    'open_id' => $token->getResourceOwnerId(),
+                    'access_token' => $token->getToken(),
+                    'fields' => [
+                        "open_id",
+                        "union_id",
+                        "avatar_url",
+                        "avatar_url_100",
+                        "avatar_url_200",
+                        "avatar_large_url",
+                        "display_name"
+                    ],
+                ]
+            ),
         ];
 
-        $request = $this->getAuthenticatedRequest(self::METHOD_POST, $url, null, $body);
+        $request = $this->createRequest(self::METHOD_POST, $url, null, $options);
 
         return $this->getParsedResponse($request);
     }
