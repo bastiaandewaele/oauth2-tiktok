@@ -5,6 +5,7 @@
       "name": "Bastiaan Dewaele"
     }
   ],
+  "license": "MIT",
   "keywords": [
     "oauth",
     "oauth2",
