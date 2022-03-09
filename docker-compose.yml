@@ -1,8 +1,0 @@
-version: '3.7'
-services:
-  php8-tiktok-oauth2:
-    container_name: php8-tiktok-oauth2
-    build: ./.docker
-    volumes:
-      - ./:/var/www/html
-    restart: "no"
