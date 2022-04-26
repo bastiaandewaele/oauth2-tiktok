@@ -15,7 +15,7 @@ The following versions of PHP are supported.
 ## Installation
 
 ```bash
-$ composer require bastiaandewaele/tiktok-oauth-v1
+$ composer require bastiaandewaele/oauth2-tiktok
 ```
 
 ## Flow authorization
