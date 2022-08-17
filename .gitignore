@@ -1,4 +1,6 @@
-/vendor/
+/vendor
 /.idea
 /.phpunit.result.cache
-/.phpunit.xml
+/phpunit.xml
+/docker-compose.yml
+/.docker
