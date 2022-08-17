@@ -115,6 +115,7 @@ class TikTokAuthProvider extends AbstractProvider
                         "avatar_large_url",
                         "display_name",
                         "profile_deep_link",
+                        "bio_description",
                     ],
                 ]
             ),
