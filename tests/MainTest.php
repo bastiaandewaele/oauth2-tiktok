@@ -66,6 +66,8 @@ class MainTest extends TestCase
                         'avatar_url_200' => 'xyz',
                         'avatar_large_url' => 'xyz',
                         'display_name' => 'xyz',
+                        'profile_deep_link' => 'xyz',
+                        'bio_description' => 'xyz',
                     ],
                 ],
                 'error' => [
