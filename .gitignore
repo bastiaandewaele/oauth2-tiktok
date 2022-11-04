@@ -2,5 +2,3 @@
 /.idea
 /.phpunit.result.cache
 /phpunit.xml
-/docker-compose.yml
-/.docker

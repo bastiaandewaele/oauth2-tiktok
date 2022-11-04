@@ -1,0 +1,8 @@
+version: '3.7'
+services:
+  php74-tiktok-oauth2:
+    container_name: php74-tiktok-oauth2
+    build: ./.docker
+    volumes:
+      - ./:/var/www/html
+    restart: "no"

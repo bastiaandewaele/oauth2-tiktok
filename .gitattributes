@@ -1,0 +1,6 @@
+* text=auto
+
+/.docker export-ignore
+/.github export-ignore
+/.docker-compose.yml export-ignore
+/phpunit.xml.dist export-ignore
