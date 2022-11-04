@@ -88,7 +88,7 @@ class TikTokAuthProvider extends AbstractProvider
     {
         // Documentation: https://developers.tiktok.com/doc/login-kit-user-info-basic
 
-        return 'https://open-api.tiktok.com/user/info/';
+        return 'https://open.tiktokapis.com/v2/user/info/';
     }
 
     /**
@@ -100,13 +100,12 @@ class TikTokAuthProvider extends AbstractProvider
     {
         $url = $this->getResourceOwnerDetailsUrl($token);
 
+        // https://developers.tiktok.com/doc/tiktok-api-v2-get-user-info/
+        // Uses V2 API, works slightly different than V1 (no open ID is required here)
         $options = [
-            'headers' => $this->getDefaultHeaders(),
             'body' => json_encode(
                 [
-                    'open_id' => $token->getResourceOwnerId(),
-                    'access_token' => $token->getToken(),
-                    'fields' => [
+                    'fields' => implode(',', [
                         "open_id",
                         "union_id",
                         "avatar_url",
@@ -116,12 +115,12 @@ class TikTokAuthProvider extends AbstractProvider
                         "display_name",
                         "profile_deep_link",
                         "bio_description",
-                    ],
+                    ]),
                 ]
             ),
         ];
 
-        $request = $this->createRequest(self::METHOD_POST, $url, null, $options);
+        $request = $this->createRequest(self::METHOD_GET, $url, null, $options);
 
         return $this->getParsedResponse($request);
     }
