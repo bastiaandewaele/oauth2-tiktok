@@ -8,17 +8,13 @@ use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
+use League\OAuth2\Client\Token\AccessTokenInterface;
 use Psr\Http\Message\ResponseInterface;
 use TikTok\OAuth2\Client\Grants\TikTokAuthorizationCodeGrant;
 use TikTok\OAuth2\Client\Grants\TikTokRefreshTokenGrant;
 
 class TikTokAuthProvider extends AbstractProvider
 {
-    /**
-     * Default host
-     */
-    protected string $host = 'https://open-api.tiktok.com';
-
     public function __construct(array $options = [], array $collaborators = [])
     {
         parent::__construct($options, $collaborators);
@@ -33,22 +29,17 @@ class TikTokAuthProvider extends AbstractProvider
      */
     public function getBaseAuthorizationUrl(): string
     {
-        return 'https://open-api.tiktok.com/platform/oauth/connect/';
+        return 'https://www.tiktok.com/v2/auth/authorize/';
     }
 
     public function getBaseAccessTokenUrl(array $params): string
     {
-        return 'https://open-api.tiktok.com/oauth/access_token/';
+        return 'https://open.tiktokapis.com/v2/oauth/token/';
     }
 
     public function getAccessTokenUrl(array $params): string
     {
-        if ($params['grant_type'] === 'refresh_token') {
-            // Refresh token requires calling a different URL
-            return 'https://open-api.tiktok.com/oauth/refresh_token/';
-        }
-
-        return 'https://open-api.tiktok.com/oauth/access_token/';
+        return 'https://open.tiktokapis.com/v2/oauth/token/';
     }
 
     /**
@@ -65,29 +56,26 @@ class TikTokAuthProvider extends AbstractProvider
         return $options;
     }
 
-    protected function prepareAccessTokenResponse(array $result): array
+    protected function getAccessTokenResourceOwnerId(): string
     {
-        $result['data']['resource_owner_id'] = $result['data']['open_id'];
-
-        return $result['data'];
+        return 'open_id';
     }
 
     /**
-     * @param null|AccessToken $token
-     * @return string[]
+     * Used for retrieving user information
      */
     protected function getAuthorizationHeaders($token = null): array
     {
-        return ['Authorization' => 'Bearer ' . $token->getToken()];
+        return ['Authorization' => 'Bearer '.$token->getToken()];
     }
 
     /**
      * Get provider URl to fetch the user info.
+     *
+     * @link https://developers.tiktok.com/doc/login-kit-user-info-basic
      */
     public function getResourceOwnerDetailsUrl(AccessToken $token): string
     {
-        // Documentation: https://developers.tiktok.com/doc/login-kit-user-info-basic
-
         return 'https://open.tiktokapis.com/v2/user/info/';
     }
 
@@ -95,32 +83,32 @@ class TikTokAuthProvider extends AbstractProvider
      * Requests and returns the resource owner of given access token.
      *
      * @throws IdentityProviderException
+     * @link https://developers.tiktok.com/doc/tiktok-api-v2-get-user-info/
      */
     public function fetchResourceOwnerDetails(AccessToken $token): array
     {
         $url = $this->getResourceOwnerDetailsUrl($token);
+        $url .= '?fields='.implode(',', [
+                "open_id",
+                "union_id",
+                "avatar_url",
+                "avatar_url_100",
+                "avatar_url_200",
+                "avatar_large_url",
+                "display_name",
+                "profile_deep_link",
+                "bio_description",
+                "is_verified",
+            ]);
 
-        // https://developers.tiktok.com/doc/tiktok-api-v2-get-user-info/
-        // Uses V2 API, works slightly different than V1 (no open ID is required here)
         $options = [
-            'body' => json_encode(
-                [
-                    'fields' => implode(',', [
-                        "open_id",
-                        "union_id",
-                        "avatar_url",
-                        "avatar_url_100",
-                        "avatar_url_200",
-                        "avatar_large_url",
-                        "display_name",
-                        "profile_deep_link",
-                        "bio_description",
-                    ]),
-                ]
-            ),
+            'headers' => [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ],
         ];
 
-        $request = $this->createRequest(self::METHOD_GET, $url, null, $options);
+        $request = $this->createRequest(self::METHOD_GET, $url, $token, $options);
 
         return $this->getParsedResponse($request);
     }
@@ -132,18 +120,10 @@ class TikTokAuthProvider extends AbstractProvider
      */
     public function checkResponse(ResponseInterface $response, $data): void
     {
-        if (isset($data['error']['code']) && $data['error']['code']) {
+        if (isset($data['error']['code']) && $data['error']['code'] !== 'ok') {
             throw new IdentityProviderException(
                 $data['error']['message'],
                 $data['error']['code'],
-                $data
-            );
-        }
-
-        if (isset($data['data']['error_code']) && $data['data']['error_code']) {
-            throw new IdentityProviderException(
-                $data['data']['description'],
-                $data['data']['error_code'],
                 $data
             );
         }
@@ -168,6 +148,7 @@ class TikTokAuthProvider extends AbstractProvider
             'user.info.basic',
             'video.list',
             'video.upload',
+            'video.publish',
         ];
     }
 }

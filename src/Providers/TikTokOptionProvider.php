@@ -10,10 +10,12 @@ class TikTokOptionProvider implements OptionProviderInterface
     {
         return [
             'headers' => [
-                'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
+                'Content-Type' => 'application/x-www-form-urlencoded',
             ],
-            'body' => json_encode($params),
+            'body' => http_build_query(
+                $params
+            ),
         ];
     }
 }
