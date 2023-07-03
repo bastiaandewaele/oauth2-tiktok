@@ -36,7 +36,7 @@ class MainTest extends TestCase
         $path = parse_url($url, PHP_URL_PATH);
 
         // Test the path
-        $this->assertEquals('/platform/oauth/connect/', $path);
+        $this->assertEquals('/v2/auth/authorize/', $path);
 
         // Test out the query parameters
         $this->assertEquals($query['client_key'], 'xyz_client_id');
