@@ -86,16 +86,33 @@ class TikTokAuthProvider extends AbstractProvider
      */
     public function fetchResourceOwnerDetails(AccessToken $token): array
     {
+        $fields = [
+            "open_id",
+            "union_id",
+            "avatar_url",
+            "avatar_url_100",
+            "avatar_url_200",
+            "avatar_large_url",
+            "display_name",
+        ];
+
+        $scopes = explode(',', $token->getValues()['scope'] ?? '');
+
+        if (in_array('user.info.profile', $scopes)) {
+            $fields[] = 'bio_description';
+            $fields[] = 'profile_deep_link';
+            $fields[] = 'is_verified';
+        }
+
+        if (in_array('user.info.stats', $scopes)) {
+            $fields[] = 'follower_count';
+            $fields[] = 'following_count';
+            $fields[] = 'likes_count';
+            $fields[] = 'video_count';
+        }
+
         $url = $this->getResourceOwnerDetailsUrl($token);
-        $url .= '?fields='.implode(',', [
-                "open_id",
-                "union_id",
-                "avatar_url",
-                "avatar_url_100",
-                "avatar_url_200",
-                "avatar_large_url",
-                "display_name",
-            ]);
+        $url .= '?fields='.implode(',', $fields);
 
         $options = [
             'headers' => [
