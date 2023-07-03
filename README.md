@@ -1,4 +1,4 @@
-# TikTok Provider for OAuth 2.0 Client
+# TikTok v2 Provider for OAuth 2.0 Client
 
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/bastiaandewaele/oauth2-tiktok/blob/master/LICENSE.md)
 
@@ -16,6 +16,38 @@ The following versions of PHP are supported.
 
 ```bash
 $ composer require bastiaandewaele/oauth2-tiktok
+```
+
+## Scopes
+
+Ensure that your app has the following scopes enabled when creating [an app](https://developers.tiktok.com/apps/).
+
+- user.info.basic
+- video.list
+- video.upload
+- video.publish
+
+With the scopes above, the resource owner will fetch the fields `avatar_url`, `avatar_url_100`, `avatar_url_200` , `avatar_large_url` , `display_name`.
+
+### More fields
+
+If you need [fields](https://developers.tiktok.com/doc/tiktok-api-scopes/) for metrics or profile link
+you need to add more scopes.
+
+```php
+$authorizationUrl = $this->provider->getAuthorizationUrl(
+    [
+        'scope' => [
+            'user.info.basic',
+            'video.list',
+            'video.upload',
+            'video.publish',
+            // These scopes only work if TikTok approved them
+            'user.info.profile', // <-- bio_description, is_verified, ...
+            'user.info.stats', // <-- follower_count, following_count, ...
+        ]
+    ]
+);
 ```
 
 ## Flow authorization
