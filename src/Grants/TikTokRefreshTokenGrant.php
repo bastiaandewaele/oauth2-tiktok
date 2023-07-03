@@ -6,6 +6,9 @@ namespace TikTok\OAuth2\Client\Grants;
 
 use League\OAuth2\Client\Grant\AbstractGrant;
 
+/**
+ * @link
+ */
 class TikTokRefreshTokenGrant extends AbstractGrant
 {
     protected function getName(): string
@@ -25,7 +28,7 @@ class TikTokRefreshTokenGrant extends AbstractGrant
         return [
             'client_key' => $defaults['client_id'],
             'client_secret' => $defaults['client_secret'],
-            'code' => $options['code'],
+            'refresh_token' => $options['refresh_token'],
             'grant_type' => $this->getName(),
         ];
     }
