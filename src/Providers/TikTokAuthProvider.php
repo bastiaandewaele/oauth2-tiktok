@@ -96,9 +96,6 @@ class TikTokAuthProvider extends AbstractProvider
                 "avatar_url_200",
                 "avatar_large_url",
                 "display_name",
-                "profile_deep_link",
-                "bio_description",
-                "is_verified",
             ]);
 
         $options = [
