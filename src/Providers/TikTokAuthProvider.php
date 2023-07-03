@@ -116,17 +116,18 @@ class TikTokAuthProvider extends AbstractProvider
      */
     public function checkResponse(ResponseInterface $response, $data): void
     {
-        if (isset($data['error']['code']) && $data['error']['code'] !== 'ok') {
+        if ($response->getStatusCode() >= 400) {
             throw new IdentityProviderException(
-                $data['error']['message'],
-                $data['error']['code'],
+                $response->getReasonPhrase(),
+                $response->getStatusCode(),
                 $data
             );
         }
 
-        if ($response->getStatusCode() === 401) {
+        if (isset($data['error']['code']) && $data['error']['code'] !== 'ok') {
+            // Errors from user info
             throw new IdentityProviderException(
-                $response->getReasonPhrase(),
+                $data['error']['message'],
                 $response->getStatusCode(),
                 $data
             );
